@@ -21,9 +21,9 @@
 ::        ?~  a  b
 ::        [i.a $(a t.a)]
 ::    Examples
-::      > (weld "urb" "it")
+::      > (append "urb" "it")
 ::      "urbit"
-::      > (weld (limo [1 2 ~]) (limo [3 4 ~]))
+::      > (append (limo [1 2 ~]) (limo [3 4 ~]))
 ::      ~[1 2 3 4]
 ++  append  weld
 ::
@@ -59,7 +59,7 @@
 ::        [+.c $(a t.a)]
 ::    Examples
 ::      > =a |=(a=@ ?.((gte a 2) ~ (some (add a 10))))
-::      > (murn `(list @)`[0 1 2 3 ~] a)
+::      > (choose `(list @)`[0 1 2 3 ~] a)
 ::      [i=12 t=[i=13 t=~]]
 ++  choose  murn
 ::
@@ -99,13 +99,11 @@
 ::          (welp +<- $(+< +<+))
 ::        --
 ::    Examples
-::      > (zing (limo [(limo ['a' 'b' 'c' ~]) (limo ['e' 'f' 'g' ~]) (limo ['h' 'i' 'j' ~]) ~]))
+::      > (concat (limo [(limo ['a' 'b' 'c' ~]) (limo ['e' 'f' 'g' ~]) (limo ['h' 'i' 'j' ~]) ~]))
 ::      ~['a' 'b' 'c' 'e' 'f' 'g' 'h' 'i' 'j']
-::      > (zing (limo [(limo [1 'a' 2 'b' ~]) (limo [3 'c' 4 'd' ~]) ~]))
+::      > (concat (limo [(limo [1 'a' 2 'b' ~]) (limo [3 'c' 4 'd' ~]) ~]))
 ::      ~[1 97 2 98 3 99 4 100]
 ++  concat  zing
-::
-
 ::
 ::  Tests if the list contains the specified element.
 ::  +contains: value source
@@ -181,10 +179,10 @@
 ::        |-
 ::        ^+  a
 ::        ?~  a  ~
- ::       ?:((b i.a) [i.a $(a t.a)] $(a t.a))
+::       ?:((b i.a) [i.a $(a t.a)] $(a t.a))
 ::    Examples
 ::      > =a |=(a=@ (gth a 1))
-::      > (skim `(list @)`[0 1 2 3 ~] a)
+::      > (filter `(list @)`[0 1 2 3 ~] a)
 ::      [i=2 t=~[3]]
 ++  filter  skim
 ::
@@ -304,7 +302,7 @@
 ::      ^+  a
 ::      (weld (scag b a) [c (slag b a)])
 ::    Examples
-::    > (into (limo ~[2 3 4]) 1 11)
+::    > (insert-at (limo ~[2 3 4]) 1 11)
 ::    ~[2 11 3 4]
 ++  insert-at  into
 ::
@@ -365,9 +363,9 @@
 ::        ?:  =(~ t.a)  i.a
 ::        $(a t.a)
 ::    Examples
-::      > (rear ~[1 2 3])
+::      > (last ~[1 2 3])
 ::      3
-::      > (rear ~)
+::      > (last ~)
 ::      hoon expression failed
 ++  last  rear
 ::
@@ -383,9 +381,9 @@
 ::        ?~  a  b
 ::        $(a t.a, b +(b))
 ::    Examples
-::      > (lent [1 2 3 4 ~]))
+::      > (length [1 2 3 4 ~])
 ::      4
-::      > (lent [1 'a' 2 'b' (some 10) ~])
+::      > (length [1 'a' 2 'b' (some 10) ~])
 ::      5
 ++  length  lent
 ::
@@ -403,10 +401,10 @@
 ::        ?~  a  ~
 ::        [i=(b i.a) t=$(a t.a)]
 ::    Examples
-::      > (turn (limo [104 111 111 110 ~]) @t)
+::      > (map (limo [104 111 111 110 ~]) @t)
 ::      <|h o o n|>
 ::      > =a |=(a=@ (add a 4))
-::      > (turn (limo [1 2 3 4 ~]) a)
+::      > (map (limo [1 2 3 4 ~]) a)
 ::      ~[5 6 7 8]
 ++  map  turn
 ::
@@ -481,20 +479,6 @@
 ::  +minBy: projection list
 ++  min-by
 ::
-
-::
-::  Builds a list from the given array.
-::  +ofArray: array
-++  of-array
-::
-
-::
-::  Builds a new list from the given enumerable object.
-::  +ofSeq: source
-++  of-seq
-::
-
-::
 ::  Returns a list of each element in the input list and its predecessor, with
 ::  the exception of the first element which is only returned as the predecessor
 ::  of the second element.
@@ -516,7 +500,7 @@
 ::        ?:((b i.a) [[i.a p.c] q.c] [p.c [i.a q.c]])
 ::    Examples
 ::      > =a |=(a=@ (gth a 1))
-::      > (skid `(list @)`[0 1 2 3 ~] a)
+::      > (partition `(list @)`[0 1 2 3 ~] a)
 ::      [p=[i=2 t=~[3]] q=[i=0 t=~[1]]]
 ++  partition  skid
 ::
@@ -569,9 +553,9 @@
 ::        |*  [[a=@ b=@] c=(list)]
 ::        (weld (scag +<-< c) (slag (add +<-< +<->) c))
 ::    Examples
-::      > (oust [4 5] "good day, urbit!")
+::      > (remove-many-at [4 5] "good day, urbit!")
 ::      "good urbit!"
-::      > (oust [2 2] `(list @)`[1 2 3 4 ~])
+::      > (remove-many-at [2 2] `(list @)`[1 2 3 4 ~])
 ::      ~[1 2]
 ++  remove-many-at oust
 ::
@@ -592,7 +576,6 @@
 ::      ~[~s1 ~s1 ~s1 ~s1 ~s1]
 ::      > `@dr`(roll (reap 5 ~s1) add)
 ::      ~s5
-
 ++  replicate  reap
 ::
 
