@@ -81,6 +81,15 @@
     !>  (choose `(list @)`[0 1 2 3 ~] |=(a=@ ?.((gte a 2) ~ (some (add a 10)))))
 ::
 ::  +chunk-by-size
+++  test-chunk-by-size-01
+  %+  expect-eq
+    !>  ~
+    !>  (chunk-by-size 2 (limo ~))
+::++  test-chunk-by-size-example-01
+::  %+  expect-eq
+::    !>  [i=~[1 2] t=[i=~[3 4] t=~[~[5 6] ~[7]]]]
+::    !>  (chunk-by-size 2 (limo ~[1 2 3 4 5 6 7]))
+::
 ::  +collect
 ::  +compare-with
 ::

@@ -88,13 +88,32 @@
 ::      [i=12 t=[i=13 t=~]]
 ++  choose  murn
 ::
-
-::
 ::  Divides the input list into lists (chunks) with a positive number of at
 ::  most chunkSize elements. Returns a new list containing the generated lists
 ::  (chunks) as its elements. Returns an empty list when the input list is empty
 ::  +chunkBySize: [chunkSize:@ud (list *)] -> (list (list *))
-++  chunk-by-size  !!
+::    Source
+::      ++  chunk-by-size
+::        |*  [p=@ud q=(list)]
+::        =/  res=(list (list _?>(?=(^ q) i.q)))  ~
+::        =/  i=@ud  0
+::        =/  next=(list _?>(?=(^ q) i.q))  ~
+::        |-  ^-  (list (list _?>(?=(^ q) i.q)))
+::        ?~  q  (flop [(flop next) res])
+::        ?:  =(i p)  $(i 0, res [(flop next) res], next ~)
+::        $(i +(i), next [i.q next], q t.q)
+::    Examples
+::      > (chunk-by-size 2 (limo ~[1 2 3 4 5 6 7]))
+::      [i=~[1 2] t=[i=~[3 4] t=~[~[5 6] ~[7]]]]
+++  chunk-by-size
+  |*  [p=@ud q=(list)]
+  =/  res=(list (list _?>(?=(^ q) i.q)))  ~
+  =/  i=@ud  0
+  =/  next=(list _?>(?=(^ q) i.q))  ~
+  |-  ^-  (list (list _?>(?=(^ q) i.q)))
+  ?~  q  (flop [(flop next) res])
+  ?:  =(i p)  $(i 0, res [(flop next) res], next ~)
+  $(i +(i), next [i.q next], q t.q)
 ::
 
 ::
