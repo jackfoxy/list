@@ -1,0 +1,23 @@
+jack@nativeplanet:~$ systemctl status groundseg
+● groundseg.service - NativePlanet GroundSeg Controller
+     Loaded: loaded (/etc/systemd/system/groundseg.service; enabled; vendor preset: enabled)
+     Active: active (running) since Tue 2023-09-05 13:43:40 PDT; 1 day 4h ago
+   Main PID: 1467 (groundseg)
+      Tasks: 15 (limit: 38204)
+     Memory: 316.0M
+        CPU: 10min 46.910s
+     CGroup: /system.slice/groundseg.service
+             ├─1467 /opt/nativeplanet/groundseg/groundseg
+             └─1524 /opt/nativeplanet/groundseg/groundseg
+
+Warning: some journal files were not opened due to insufficient permissions.
+
+jack@nativeplanet:~$ journalctl -xe
+Hint: You are currently not seeing messages from other users and the system.
+      Users in groups 'adm', 'systemd-journal' can see all messages.
+      Pass -q to turn off this notice.
+Sep 06 17:44:21 nativeplanet wnck-applet[3303]: Negative content width -3 (allocation 1, extents 2x2) while allocatin>
+Sep 06 17:44:22 nativeplanet wnck-applet[3303]: Negative content width -3 (allocation 1, extents 2x2) while allocatin>
+Sep 06 17:44:24 nativeplanet wnck-applet[3303]: Negative content width -3 (allocation 1, extents 2x2) while allocatin>
+Sep 06 17:44:24 nativeplanet wnck-applet[3303]: Negative content width -3 (allocation 1, extents 2x2) while allocatin>
+Sep 06 17:44:24 nativeplanet wnck-applet[3303]: Negative content width -3 (allocation 1, extents 2x2) while allocatin>
