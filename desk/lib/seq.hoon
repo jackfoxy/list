@@ -107,6 +107,7 @@
 ::      [i=~[1 2] t=[i=~[3 4] t=~[~[5 6] ~[7]]]]
 ++  chunk-by-size
   |*  [p=@ud q=(list)]
+  ?:  =(0 p)  ~|("non-zero size required" !!)
   =/  res=(list (list _?>(?=(^ q) i.q)))  ~
   =/  i=@ud  0
   =/  next=(list _?>(?=(^ q) i.q))  ~
@@ -115,20 +116,60 @@
   ?:  =(i p)  $(i 0, res [(flop next) res], next ~)
   $(i +(i), next [i.q next], q t.q)
 ::
-
-::
 ::  For each element of the list, applies the given function. Concatenates all
 ::  the results and return the combined list.
-::  +collect: mapping list
-++  collect  !!
+::  +collect: [mapping:$-(* (list)) (list)] -> (list)
+::    Source
+::      ++  collect
+::        |*  [a=$-(* (list)) b=(list)]
+::        =/  res=(list)  ~
+::        |-
+::        ?~  b  (flop res)
+::        =/  c  (a i.b)
+::        |-
+::        ?~  c  ^$(b t.b)
+::        $(c t.c, res [i.c res])
+::    Examples
+::      > (collect |=(a=* (limo ~[a a])) (limo ~[1 2 3]))
+::      ~[1 1 2 2 3 3]
+++  collect
+  |*  [a=$-(* (list)) b=(list)]
+  =/  res=(list)  ~
+  |-
+  ?~  b  (flop res)
+  =/  c  (a i.b)
+  |-
+  ?~  c  ^$(b t.b)
+  $(c t.c, res [i.c res])
 ::
-
-::
-::  Compares two lists using the given comparison function, element by element.
-::  +compareWith: comparer list1 list2
-++  compare-with  !!
-::
-
+::  Compares two lists element by element using the given comparison function.
+::  When an entry exists for both lists, returns the result of the comparer 
+::  function. When the second list is longer than the first returns %.y for
+::  entries of second where first does not exist. When first list is longer
+::  returns %.n for entries of first where second does not exist.
+::  +compare: [comparer:$-([* *] ?) (list) (list2)] -> (list ?)
+::    Source
+::      ++  compare
+::        |*  [a=$-([* *] ?) b=(list) c=(list)]
+::        =/  res=(list ?)  ~
+::        =/  bb  b
+::        =/  cc  c
+::        |-  ^-  (list ?)
+::        ?~  bb  ?~  cc  (flop res)  $(cc t.cc, res [%.y res])
+::        ?~  cc  $(bb t.bb, res [%.n res])
+::        $(bb t.bb, cc t.cc, res [(a i.bb i.cc) res])
+::    Examples
+::      > (compare aor "when" "than")
+::      ~[%.n %.y %.n %.y]
+++  compare
+  |*  [a=$-([* *] ?) b=(list) c=(list)]
+  =/  res=(list ?)  ~
+  =/  bb  b
+  =/  cc  c
+  |-  ^-  (list ?)
+  ?~  bb  ?~  cc  (flop res)  $(cc t.cc, res [%.y res])
+  ?~  cc  $(bb t.bb, res [%.n res])
+  $(bb t.bb, cc t.cc, res [(a i.bb i.cc) res])
 ::
 ::  Returns a new list that contains the elements of each the lists in order.
 ::  +concat: (list (list)) -> (list)
@@ -143,25 +184,52 @@
 ::          (welp +<- $(+< +<+))
 ::        --
 ::    Examples
-::      > (concat (limo [(limo ['a' 'b' 'c' ~]) (limo ['e' 'f' 'g' ~]) (limo ['h' 'i' 'j' ~]) ~]))
+::      > (concat (limo [(limo ['a' 'b' 'c' ~]) (limo ['e' 'f' 'g' ~]) 
+::          (limo ['h' 'i' 'j' ~]) ~]))
 ::      ~['a' 'b' 'c' 'e' 'f' 'g' 'h' 'i' 'j']
 ::      > (concat (limo [(limo [1 'a' 2 'b' ~]) (limo [3 'c' 4 'd' ~]) ~]))
 ::      ~[1 97 2 98 3 99 4 100]
 ++  concat  zing
 ::
 ::  Tests if the list contains the specified element.
-::  +contains: value source
-++  contains  !!
-::
-
+::  +contains: [value:* (list)] -> ?
+::    Source
+::      ++  contains
+::        |*  [a=* b=(list)]
+::        |-  ^-  ?
+::        ?~  b  %.n
+::        ?:  =(a i.b)  %.y
+::        $(b t.b)
+::    Examples
+::      > (contains "yep" `(list tape)`~["nope" "yep"])
+::      %.y
+++  contains
+  |*  [a=* b=(list)]
+  |-  ^-  ?
+  ?~  b  %.n
+  ?:  =(a i.b)  %.y
+  $(b t.b)
 ::
 ::  Applies a key-generating function to each element of a list and returns a
 ::  list yielding unique keys and their number of occurrences in the original
 ::  list.
-::  +countBy: projection list
-++  count-by  !!
-::
+::  +countBy: [projection:$-(* *) (list)] -> (list [* @ud])
+::    Source
 
+
+::    Examples
+::      > (count-by:seq |=(a=tape (first-n:seq 2 a)) (limo ~["where" "when" "there" "then"]))
+::      ~[[[116 104 0] 2] [[119 104 0] 2]]
+++  count-by
+  |*  [a=$-(* *) b=(list)]
+::  ?~  b  ~
+  =/  res=(map _?>(?=(^ b) (a i.b)) @ud)  ~
+  |-  ^-  (list [_?>(?=(^ b) (a i.b)) @ud])
+  ?~  b  ~(tap by res)
+  =/  key=_?>(?=(^ b) (a i.b))  (a i.b)
+  =/  val  (~(get by res) key)
+  ?~  val  $(res `(map _?>(?=(^ b) (a i.b)) @ud)`(~(put by res) key 1), b t.b)
+  $(res `(map _?>(?=(^ b) (a i.b)) @ud)`(~(put by res) key +(`@ud`(need val))), b t.b)
 ::
 ::  Returns a list that contains no duplicate entries according to generic hash
 ::  and equality comparisons on the entries. If an element occurs multiple times
@@ -258,6 +326,23 @@
 ::  +findIndexBack: predicate list
 ++  find-index-back  !!
 ::
+
+::
+::  Returns the first N elements of the list.
+::  +first-n: [count:@ud (list *)] -> (list *)
+::    Source
+::      ++  scag
+::        ~/  %scag
+::        |*  [a=@ b=(list)]
+::        |-  ^+  b
+::        ?:  |(?=(~ b) =(0 a))  ~
+::        [i.b $(b t.b, a (dec a))]
+::    Examples
+::      > (scag 2 `(list @)`[1 2 3 4 ~])
+::      [i=1 t=~[2]]
+::      > (scag 10 `(list @)`[1 2 3 4 ~])
+::      [i=1 t=~[2 3 4]]
+++  first-n  scag
 
 ::
 ::  Applies a function to each element of the collection, threading an
@@ -368,24 +453,6 @@
 ::
 
 ::
-::  Returns the last element of the list.
-::  +last: (list) -> *
-::    ArgumentException:  Crash when the input does not have any elements.
-::    Source
-::      ++  rear
-::        ~/  %rear
-::        |*  a=(list)
-::        ^-  _?>(?=(^ a) i.a)
-::        ?>  ?=(^ a)
-::        ?:  =(~ t.a)  i.a
-::        $(a t.a)
-::    Examples
-::      > (last ~[1 2 3])
-::      3
-::      > (last ~)
-::      hoon expression failed
-++  last  rear
-::
 ::  Returns the length of the list.
 ::  +length: (list *) -> @ud
 ::    Source
@@ -407,7 +474,7 @@
 ::
 ::  Builds a new list whose elements are the results of applying the given
 ::  gate to each of the elements of the list.
-::  +map: [(list) mapping:(* -> *)] -> (list)
+::  +map-elements: [(list) mapping:(* -> *)] -> (list)
 ::    Source
 ::      ++  turn
 ::        ~/  %turn
@@ -423,7 +490,7 @@
 ::      > =a |=(a=@ (add a 4))
 ::      > (map (limo [1 2 3 4 ~]) a)
 ::      ~[5 6 7 8]
-++  map  turn
+++  map-elements  turn
 ::
 
 ::
@@ -598,7 +665,7 @@
 
 ::
 ::  Returns a new list with the elements in reverse order.
-::  +rev: list
+::  +reverse: list
 ::    Source
 ::      ++  flop
 ::        ~/  %flop
@@ -615,7 +682,7 @@
 ::      ~[3 2 1]
 ::      > (flop (flop a))
 ::      ~[1 2 3]
-++  rev  flop
+++  reverse  flop
 ::
 ::  Applies a function to each element of the collection, threading an
 ::  accumulator argument through the computation. Take the second argument, and
@@ -715,21 +782,24 @@
 ::
 
 ::
-::  Returns the first N elements of the list.
-::  +take: [count:@ud (list *)] -> (list *)
+::  Returns the last element of the list.
+::  +tail-end: (list) -> *
+::    ArgumentException:  Crash when the input does not have any elements.
 ::    Source
-::      ++  scag
-::        ~/  %scag
-::        |*  [a=@ b=(list)]
-::        |-  ^+  b
-::        ?:  |(?=(~ b) =(0 a))  ~
-::        [i.b $(b t.b, a (dec a))]
+::      ++  rear
+::        ~/  %rear
+::        |*  a=(list)
+::        ^-  _?>(?=(^ a) i.a)
+::        ?>  ?=(^ a)
+::        ?:  =(~ t.a)  i.a
+::        $(a t.a)
 ::    Examples
-::      > (scag 2 `(list @)`[1 2 3 4 ~])
-::      [i=1 t=~[2]]
-::      > (scag 10 `(list @)`[1 2 3 4 ~])
-::      [i=1 t=~[2 3 4]]
-++  take  scag
+::      > (last ~[1 2 3])
+::      3
+::      > (last ~)
+::      hoon expression failed
+++  tail-end  rear
+
 ::
 ::
 ::  Returns a list that contains all elements of the original list while the

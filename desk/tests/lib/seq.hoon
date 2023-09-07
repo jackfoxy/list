@@ -18,10 +18,10 @@
   %+  expect-eq
     !>  ~
     !>  (append ~ ~)
-::++  test-append-01    ::fails to do: report weld issue
-::  %+  expect-eq
-::    !>  ~[1]
-::    !>  (append ~[1] ~)
+++  test-append-01    ::fails to do: report weld issue
+  %+  expect-eq
+    !>  ~[1]
+    !>  (append ~[1] `(list)`~)
 ++  test-append-02
   %+  expect-eq
     !>  ~[1]
@@ -81,17 +81,73 @@
     !>  (choose `(list @)`[0 1 2 3 ~] |=(a=@ ?.((gte a 2) ~ (some (add a 10)))))
 ::
 ::  +chunk-by-size
+++  test-chunk-by-size-00
+  %+  expect-eq
+    !>  [i=~ t=~]
+    !>  (chunk-by-size 2 `(list)`~)
 ++  test-chunk-by-size-01
   %+  expect-eq
-    !>  ~
-    !>  (chunk-by-size 2 (limo ~))
-::++  test-chunk-by-size-example-01
-::  %+  expect-eq
-::    !>  [i=~[1 2] t=[i=~[3 4] t=~[~[5 6] ~[7]]]]
-::    !>  (chunk-by-size 2 (limo ~[1 2 3 4 5 6 7]))
+    !>  [i=~[1] t=~]
+    !>  (chunk-by-size 1 `(list)`~[1])
+++  test-chunk-by-size-02
+  %+  expect-eq
+    !>  [i=~[1] t=~]
+    !>  (chunk-by-size 2 `(list)`~[1])
+++  test-chunk-by-size-03
+  %+  expect-eq
+    !>  [i=~[1] t=[i=~[2] t=~]]
+    !>  (chunk-by-size 1 `(list)`~[1 2])
+++  test-chunk-by-size-04
+  %+  expect-eq
+    !>  ~["ur" "bi" "t"]
+    !>  (chunk-by-size 2 "urbit")
+++  test-fail-chunk-by-size-01
+  %-  expect-fail
+  |.  (chunk-by-size 0 `(list)`~[1])
+++  test-chunk-by-size-example-01
+  %+  expect-eq
+    !>  [i=~[1 2] t=[i=~[3 4] t=~[~[5 6] ~[7]]]]
+    !>  (chunk-by-size 2 (limo ~[1 2 3 4 5 6 7]))
 ::
 ::  +collect
-::  +compare-with
+++  test-collect-00
+  %+  expect-eq
+    !>  ~
+    !>  (collect |=(a=* (limo ~[a a])) ~)
+++  test-collect-01
+  %+  expect-eq
+    !>  ~[1 1]
+    !>  (collect |=(a=* (limo ~[a a])) (limo ~[1]))
+++  test-collect-example-01
+  %+  expect-eq
+    !>  ~[1 1 2 2 3 3]
+    !>  (collect |=(a=* (limo ~[a a])) (limo ~[1 2 3]))
+::
+::  +compare
+++  test-compare-00
+  %+  expect-eq
+    !>  ~
+    !>  (compare aor ~ ~)
+++  test-compare-01
+  %+  expect-eq
+    !>  ~[%.n] 
+    !>  (compare aor `(list @)`~[1] ~)
+++  test-compare-02
+  %+  expect-eq
+    !>  ~[%.y]
+    !>  (compare aor ~ `(list @)`~[1])
+++  test-compare-03
+  %+  expect-eq
+    !>  ~[%.y %.n]
+    !>  (compare dor `(list @)`~[1 2] `(list @)`~[1])
+++  test-compare-04
+  %+  expect-eq
+    !>  ~[%.y %.y]
+    !>  (compare dor `(list @)`~[1] `(list @)`~[1 2])
+++  test-compare-example-01
+  %+  expect-eq
+    !>  ~[%.n %.y %.n %.y]
+    !>  (compare aor "when" "than")
 ::
 ::  +concat
 ++  test-concat-00
@@ -129,7 +185,33 @@
     !>  (concat (limo [(limo [1 'a' 2 'b' ~]) (limo [3 'c' 4 'd' ~]) ~]))
 ::
 ::  +contains
+++  test-contains-00
+  %+  expect-eq
+    !>  %.n
+    !>  (contains "yep" `(list)`~)
+++  test-contains-01
+  %+  expect-eq
+    !>  %.y
+    !>  (contains 1 `(list @)`~[1]) 
+++  test-contains-example-01
+  %+  expect-eq
+    !>  %.y
+    !>  (contains "yep" `(list tape)`~["nope" "yep"])
+::
 ::  +count-by
+::++  test-count-by-00
+::  %+  expect-eq
+::    !>  ~
+::    !>  (count-by |=(a=tape (first-n 2 a)) ~)
+++  test-count-by-01
+  %+  expect-eq
+    !>  ~[["wh" 1]]
+    !>  (count-by |=(a=tape `tape`(first-n 2 a)) (limo ~["where"]))
+++  test-count-by-example-01
+  %+  expect-eq
+    !>  ~[[[i='t' t="h"] 2] [[i='w' t="h"] 2]]
+    !>  (count-by |=(a=tape (first-n 2 a)) (limo ~["where" "when" "there" "then"]))
+::
 ::  +distinct
 ::  +distinct-by
 ::  +empty
@@ -169,6 +251,33 @@
 ::  +find-back
 ::  +find-index
 ::  +find-index-back
+::
+::  +first-n
+++  test-first-n-00      :: to do: take sucks too
+  %+  expect-eq
+    !>  ~
+    !>  (first-n 0 ~)
+++  test-first-n-01
+  %+  expect-eq
+    !>  ~
+    !>  (first-n 0 `(list @)`~[1])
+++  test-first-n-02
+  %+  expect-eq
+    !>  ~
+    !>  (first-n 1 `(list)`~)
+++  test-first-n-03
+  %+  expect-eq
+    !>  ~[1]
+    !>  (first-n 1 `(list @)`~[1])
+++  test-first-n-example-01
+  %+  expect-eq
+    !>  [i=1 t=~[2]]
+    !>  (first-n 2 `(list @)`[1 2 3 4 ~])
+++  test-first-n-example-02
+  %+  expect-eq
+    !>  [i=1 t=~[2 3 4]]
+    !>  (first-n 10 `(list @)`[1 2 3 4 ~])
+::
 ::  +fold
 ::  +fold2
 ::  +fold-back
@@ -218,23 +327,6 @@
 ::  +iteri
 ::  +iteri2
 ::
-::  +last
-++  test-last-00            ::  to do: why can't use last
-  %+  expect-eq
-    !>  1
-    !>  (rear ~[1])
-::++  test-last-01
-::  %+  expect-eq
-::    !>  "b"
-::    !>  (last ~["a" "b"])
-::++  test-last-example-01
-::  %+  expect-eq
-::    !>  3
-::    !>  (last ~[1 2 3])
-::++  test-fail-last-example
-::  %-  expect-fail
-::  |.  (last ~)
-::
 ::  +length
 ++  test-length-00
   %+  expect-eq
@@ -253,23 +345,23 @@
     !>  5
     !>  (length [1 'a' 2 'b' (some 10) ~])
 ::
-::  +map
-::++  test-map-00                      :: to do: can't use map
-::  %+  expect-eq
-::    !>  ~
-::    !>  (map ~ @t)
-::++  test-map-01
-::  %+  expect-eq
-::    !>  ~['h']
-::    !>  (map ~[104] @t)
-::++  test-map-example-01
-::  %+  expect-eq
-::    !>  "hoon"
-::    !>  (map (limo [104 111 111 110 ~]) @t)
-::++  test-map-example-02
-::  %+  expect-eq
-::    !>  ~[5 6 7 8]
-::    !>  (map (limo [1 2 3 4 ~]) |=(a=@ (add a 4)))
+::  +map-elements
+++  test-map-elements-00
+  %+  expect-eq
+    !>  ~
+    !>  (map-elements ~ @t)
+++  test-map-elements-elements-01
+  %+  expect-eq
+    !>  ~['h']
+    !>  (map-elements ~[104] @t)
+++  test-map-elements-example-01
+  %+  expect-eq
+    !>  "hoon"
+    !>  (map-elements (limo [104 111 111 110 ~]) @t)
+++  test-map-elements-example-02
+  %+  expect-eq
+    !>  ~[5 6 7 8]
+    !>  (map-elements (limo [1 2 3 4 ~]) |=(a=@ (add a 4)))
 ::
 ::  +map2
 ::  +map3
@@ -379,23 +471,23 @@
     !>  ~s5
     !>  `@dr`(roll (replicate 5 ~s1) add)
 ::
-::  +rev
-::++  test-rev-00    :: to do: rev already used in sys/hoon/hoon
-::  %+  expect-eq
-::    !>  ~
-::    !>  (rev ~)
-::++  test-rev-01
-::  %+  expect-eq
-::    !>  ~[1]
-::    !>  (rev ~[1])
-::++  test-rev-02
-::  %+  expect-eq
-::    !>  ~[2 1]
-::    !>  (rev ~[1 2])
-::++  test-rev-example-01
-::  %+  expect-eq
-::    !>  ~[3 2 1]
-::    !>  (rev (limo ~[1 2 3]))
+::  +reverse
+++  test-reverse-00    :: to do: rev already used in sys/hoon/hoon
+  %+  expect-eq
+    !>  ~
+    !>  (reverse ~)
+++  test-reverse-01
+  %+  expect-eq
+    !>  ~[1]
+    !>  (reverse ~[1])
+++  test-reverse-02
+  %+  expect-eq
+    !>  ~[2 1]
+    !>  (reverse ~[1 2])
+++  test-reverse-example-01
+  %+  expect-eq
+    !>  ~[3 2 1]
+    !>  (reverse (limo ~[1 2 3]))
 ::
 ::  +scan
 ::  +scan-back
@@ -413,31 +505,22 @@
 ::  +sum-by
 ::  +tail
 ::
-::  +take
-::++  test-take-00      :: to do: take sucks too
-::  %+  expect-eq
-::    !>  ~
-::    !>  (take 0 ~)
-::++  test-take-01
-::  %+  expect-eq
-::    !>  ~
-::    !>  (take 0 ~[1])
-::++  test-take-02
-::  %+  expect-eq
-::    !>  ~
-::    !>  (take 1 ~)
-::++  test-take-03
-::  %+  expect-eq
-::    !>  ~[1]
-::    !>  (take 1 ~[1])
-::++  test-take-example-01
-::  %+  expect-eq
-::    !>  [i=1 t=~[2]]
-::    !>  (take 2 `(list @)`[1 2 3 4 ~])
-::++  test-take-example-02
-::  %+  expect-eq
-::    !>  [i=1 t=~[2 3 4]]
-::    !>  (take 10 `(list @)`[1 2 3 4 ~])
+::  +tail-end
+++  test-tail-end-00
+  %+  expect-eq
+    !>  1
+    !>  (tail-end ~[1])
+++  test-tail-end-01
+  %+  expect-eq
+    !>  "b"
+    !>  (tail-end ~["a" "b"])
+++  test-fail-tail-end-01
+  %-  expect-fail
+  |.  (tail-end `(list)`~)
+++  test-tail-end-example-01
+  %+  expect-eq
+    !>  3
+    !>  (tail-end ~[1 2 3])
 ::
 ::  +take-while
 ::  +transpose
