@@ -21,3 +21,18 @@ Sep 06 17:44:22 nativeplanet wnck-applet[3303]: Negative content width -3 (alloc
 Sep 06 17:44:24 nativeplanet wnck-applet[3303]: Negative content width -3 (allocation 1, extents 2x2) while allocatin>
 Sep 06 17:44:24 nativeplanet wnck-applet[3303]: Negative content width -3 (allocation 1, extents 2x2) while allocatin>
 Sep 06 17:44:24 nativeplanet wnck-applet[3303]: Negative content width -3 (allocation 1, extents 2x2) while allocatin>
+
+jack@nativeplanet:~$ sudo journalctl -f -u groundseg
+Sep 06 19:11:10 nativeplanet groundseg[1524]: Anchor: Attempting to get regions
+Sep 06 19:12:11 nativeplanet groundseg[1524]: Anchor: Attempting to get regions
+Sep 06 19:13:11 nativeplanet groundseg[1524]: Anchor: Attempting to get regions
+Sep 06 19:14:11 nativeplanet groundseg[1524]: Anchor: Attempting to get regions
+Sep 06 19:15:12 nativeplanet groundseg[1524]: Anchor: Attempting to get regions
+Sep 06 19:16:12 nativeplanet groundseg[1524]: Anchor: Attempting to get regions
+Sep 06 19:17:12 nativeplanet groundseg[1524]: Anchor: Attempting to get regions
+Sep 06 19:18:12 nativeplanet groundseg[1524]: Anchor: Attempting to get regions
+Sep 06 19:19:13 nativeplanet groundseg[1524]: Anchor: Attempting to get regions
+Sep 06 19:20:13 nativeplanet groundseg[1524]: Anchor: Attempting to get regions
+
+tcp        0      0 0.0.0.0:8000            0.0.0.0:*               LISTEN      1524/groundseg
+tcp        0      0 0.0.0.0:27016           0.0.0.0:*               LISTEN      1524/groundseg 
