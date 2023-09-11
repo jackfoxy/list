@@ -137,7 +137,7 @@
   =/  res=(list)  ~
   |-
   ?~  b  (flop res)
-  =/  c  (a i.b)
+  =/  c=(list)  (a i.b)
   |-
   ?~  c  ^$(b t.b)
   $(c t.c, res [i.c res])
@@ -219,7 +219,7 @@
 
 ::    Examples
 ::      > (count-by:seq |=(a=tape (first-n:seq 2 a)) (limo ~["where" "when" "there" "then"]))
-::      ~[[[116 104 0] 2] [[119 104 0] 2]]
+::      ~[[[i='t' t="h"] 2] [[i='w' t="h"] 2]]
 ++  count-by
   |*  [a=$-(* *) b=(list)]
 ::  ?~  b  ~
