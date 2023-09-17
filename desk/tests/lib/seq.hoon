@@ -8,6 +8,10 @@
   %+  expect-eq
     !>  ~[[1 2]]
     !>  (all-pairs ~[1] ~[2])
+++  test-all-pairs-01
+  %+  expect-eq
+    !>  ~[["cc" 3] ["cc" 2] ["cc" 1] ["bb" 3] ["bb" 2] ["bb" 1] ["aa" 3] ["aa" 2] ["aa" 1]]
+    !>  `(list [tape @ud])`(all-pairs ~["aa" "bb" "cc"] ~[1 2 3])
 ++  test-all-pairs-example-01  ::  tests wetness
   %+  expect-eq
     !>  ~[['c' 3] ['c' 2] ['c' 1] ['b' 3] ['b' 2] ['b' 1] ['a' 3] ['a' 2] ['a' 1]]
@@ -118,6 +122,10 @@
   %+  expect-eq
     !>  ~[1 1]
     !>  (collect |=(a=* (limo ~[a a])) (limo ~[1]))
+++  test-collect-02
+  %+  expect-eq
+    !>  ~[~[97 97] ~[97 97] ~[98 98] ~[98 98] ~[99 99] ~[99 99]]
+    !>  (collect |=(a=* (limo ~[a a])) (limo ~["aa" "bb" "cc"]))
 ++  test-collect-example-01
   %+  expect-eq
     !>  ~[1 1 2 2 3 3]
@@ -202,15 +210,15 @@
 ::++  test-count-by-00
 ::  %+  expect-eq
 ::    !>  ~
-::    !>  (count-by |=(a=tape (first-n 2 a)) ~)
+::    !>  (count-by |=(a=tape (scag 2 a)) ~)
 ++  test-count-by-01
   %+  expect-eq
     !>  ~[["wh" 1]]
-    !>  (count-by |=(a=tape `tape`(first-n 2 a)) (limo ~["where"]))
+    !>  (count-by |=(a=tape `tape`(scag 2 a)) (limo ~["where"]))
 ++  test-count-by-example-01
   %+  expect-eq
     !>  ~[[[i='t' t="h"] 2] [[i='w' t="h"] 2]]
-    !>  (count-by |=(a=tape (first-n 2 a)) (limo ~["where" "when" "there" "then"]))
+    !>  (count-by |=(a=tape (scag 2 a)) (limo ~["where" "when" "there" "then"]))
 ::
 ::  +distinct
 ::  +distinct-by
